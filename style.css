@@ -2,6 +2,10 @@
   height: 300px;
 }
 
+#orientationContainer {
+  display: inline-block;;
+}
+
 #playerBoard {
   width: 300px;
   height: 300px;

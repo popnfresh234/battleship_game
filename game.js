@@ -6,41 +6,41 @@ const playerShipCount = 5;
 let allShipsPlaced = false;
 
 const ships = [
-  {name: 'Carrier', units: 5, placed: false},
-  {name: 'Battleship', units: 4, placed: false},
-  {name: 'Cruiser', units: 3, placed: false},
-  {name: 'Submarine', units: 3, placed: false},
-  {name: 'Destroyer', units: 2, placed: false},
+{name: 'Carrier', units: 5, placed: false},
+{name: 'Battleship', units: 4, placed: false},
+{name: 'Cruiser', units: 3, placed: false},
+{name: 'Submarine', units: 3, placed: false},
+{name: 'Destroyer', units: 2, placed: false},
 ];
 
 const playerBoard = {
   board: [
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
   ],
   name: "player"
 };
 
 const cpuBoard = {
   board: [
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
-   [1,1,1,1,0,0,0,0,0,0],
-   [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
+  [1,1,1,1,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
   ],
   name: 'cpu'
 };
@@ -75,7 +75,7 @@ function isValidPlacement(ship, x, y, isVertical){
     return false;
   }
 
-    if (isVertical && y + ship.units > BOARD_HEIGHT) {
+  if (isVertical && y + ship.units > BOARD_HEIGHT) {
     console.log("TOO LONG! ", ship.units);
     return false;
   }
@@ -87,17 +87,20 @@ function isValidPlacement(ship, x, y, isVertical){
   return true;
 }
 
-function updateBoard(ship, x, y, isVertical){
-      for( var j = 0; j < ship.units; j ++){
-        if(!isVertical){
-          playerBoard.board[y][x+j] = 1;
-        }
-      }
-      ship.placed = true;
-      if(ship.name === "Destroyer"){
-        allShipsPlaced = true;
-      }
-      setUpBoard(playerBoard);
+function updatePlayerBoard(ship, x, y, isVertical){
+  for( var j = 0; j < ship.units; j ++){
+    if(!isVertical){
+      playerBoard.board[y][x+j] = 1;
+    } else {
+      playerBoard.board[y + j][x] = 1;
+    }
+  }
+  ship.placed = true;
+  if(ship.name === "Destroyer"){
+    allShipsPlaced = true;
+    $('#orientationContainer').empty().remove();
+  }
+  setUpBoard(playerBoard);
 }
 
 function placeShip(event){
@@ -115,23 +118,32 @@ function placeShip(event){
     let y = Number(id.split("")[2]);
     if(isValidPlacement(shipToBePlaced, x, y, isVertical)){
       $('#playerBoard').empty();
-      updateBoard(shipToBePlaced, x, y, isVertical);
+      updatePlayerBoard(shipToBePlaced, x, y, isVertical);
     }
   }
 }
-  function fire(){
+
+function fire(){
   console.log("FIRE!");
 }
 
 
-function handleClick(event){
-  if (allShipsPlaced) {
-    fire(event);
-  } else {
+function handlePlayerBoardClick(event){
+  if (!allShipsPlaced) {
     placeShip(event);
+  }
+}
+
+function handleCpuBoardClick(event){
+  if (!allShipsPlaced) {
+    alert("NOT DONE PLACING");
+  } else {
+    fire();
   }
 }
 
 setUpBoard(playerBoard);
 setUpBoard(cpuBoard);
-$('#playerBoard').on("click", handleClick);
+
+$('#playerBoard').on("click", handlePlayerBoardClick);
+$('#cpuBoard').on("click", handleCpuBoardClick);
