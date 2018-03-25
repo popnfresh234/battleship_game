@@ -1,6 +1,5 @@
 #container {
-  width: 100%
-  margin: auto;
+  height: 300px;
 }
 
 #playerBoard {
@@ -13,23 +12,27 @@
   height: 500px;
 }
 
-#playerBoard div {
-  height: 25px;
+.square {
+    height: 25px;
   width: 25px;
   position: absolute;
-  border: 2px solid blue;
-  text-align: center;
   line-height: 25px;
+  text-align: center;
+}
+
+#playerBoard div {
+  border: 2px solid blue;
   float: left;
 }
 
 
 #cpuBoard div {
-  height: 25px;
-  width: 25px;
-  position: absolute;
   border: 2px solid green;
   text-align: center;
-  line-height: 25px;
   margin-left: 300px;
+}
+
+#placeShipButtonsContainer {
+  display: inline-block;
+  float: left;
 }
