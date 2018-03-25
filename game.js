@@ -1,8 +1,6 @@
 const BOARD_LENGTH = 10;
 const BOARD_HEIGHT = 10;
 const SIZE = 25;
-const HORIZONTAL = 0;
-const VERTICAL = 1;
 
 const playerShipCount = 5;
 let allShipsPlaced = false;
@@ -69,15 +67,15 @@ function setUpBoard(board){
 }
 
 
-function isValidPlacement(ship, x, y, orientation){
+function isValidPlacement(ship, x, y, isVertical){
 
   //If the ship will end up being longer than the board, false
-  if (orientation === HORIZONTAL && x + ship.units > BOARD_LENGTH) {
+  if (!isVertical && x + ship.units > BOARD_LENGTH) {
     console.log("TOO LONG! ", ship.units);
     return false;
   }
 
-    if (orientation === VERTICAL && y + ship.units > BOARD_HEIGHT) {
+    if (isVertical && y + ship.units > BOARD_HEIGHT) {
     console.log("TOO LONG! ", ship.units);
     return false;
   }
@@ -89,8 +87,21 @@ function isValidPlacement(ship, x, y, orientation){
   return true;
 }
 
+function updateBoard(ship, x, y, isVertical){
+      for( var j = 0; j < ship.units; j ++){
+        if(!isVertical){
+          playerBoard.board[y][x+j] = 1;
+        }
+      }
+      ship.placed = true;
+      if(ship.name === "Destroyer"){
+        allShipsPlaced = true;
+      }
+      setUpBoard(playerBoard);
+}
+
 function placeShip(event){
-  let orientation = HORIZONTAL;
+  let isVertical = $('#orientationCheckbox').is(":checked");
   let shipToBePlaced;
   for (let i = 0; i < ships.length; i ++){
     if(!ships[i].placed){
@@ -102,27 +113,18 @@ function placeShip(event){
     let id = $(event.target.closest('div')).attr('id');
     let x = Number(id.split("")[1]);
     let y = Number(id.split("")[2]);
-    if(isValidPlacement(shipToBePlaced, x, y, orientation)){
-       $('#playerBoard').empty();
-      for( var j = 0; j < shipToBePlaced.units; j ++){
-        playerBoard.board[y][x+j] = 1;
-        shipToBePlaced.placed = true;
-      }
-      if(shipToBePlaced.name === "Destroyer"){
-        allShipsPlaced = true;
-      }
-      setUpBoard(playerBoard);
+    if(isValidPlacement(shipToBePlaced, x, y, isVertical)){
+      $('#playerBoard').empty();
+      updateBoard(shipToBePlaced, x, y, isVertical);
     }
   }
 }
-
-function fire(){
+  function fire(){
   console.log("FIRE!");
 }
 
 
 function handleClick(event){
-  console.log(event.target.closest('div'));
   if (allShipsPlaced) {
     fire(event);
   } else {
