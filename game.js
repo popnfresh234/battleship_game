@@ -90,7 +90,7 @@ function isValidPlacement(ship, x, y, orientation){
 }
 
 function placeShip(event){
-  let orientaiton = HORIZONTAL;
+  let orientation = HORIZONTAL;
   let shipToBePlaced;
   for (let i = 0; i < ships.length; i ++){
     if(!ships[i].placed){
