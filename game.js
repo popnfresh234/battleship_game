@@ -78,6 +78,17 @@ function setUpBoard(board){
 
 function isValidPlacement(ship, x, y, isVertical){
 
+  //check X & Y for other ships:
+  for(var i = 0; i < ship.units; i ++){
+    if(playerBoard.board[y][y + x] === 1){
+      return false;
+    }
+
+    if(playerBoard.board[y + i][x]){
+      return false;
+    }
+  }
+
   //If the ship will end up being longer than the board, false
   if (!isVertical && x + ship.units > BOARD_LENGTH) {
     console.log("TOO LONG! ", ship.units);
