@@ -1,42 +1,45 @@
+body {
+  margin: 0;
+}
+
 #container {
-  height: 300px;
+  margin: 0;
+  display: inline-block;
+  height: 250px;
 }
 
 #orientationContainer {
-  display: inline-block;;
+
 }
 
 #playerBoard {
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
+  float: left
 }
 
 #cpuBoard {
-  width: 300px;
-  height: 300px;
+  width: 250px;
+  height: 250px;
+  margin-left: 300px;
 }
 
 .square {
-    height: 25px;
+  height: 25px;
   width: 25px;
+  background-color: grey;
   position: absolute;
   line-height: 25px;
   text-align: center;
 }
 
 #playerBoard div {
-  border: 2px solid blue;
-  float: left;
+  border: 0px solid blue;
 }
 
 
 #cpuBoard div {
-  border: 2px solid green;
+  border: 0px solid green;
   text-align: center;
-  margin-left: 300px;
 }
 
-#placeShipButtonsContainer {
-  display: inline-block;
-  float: left;
-}

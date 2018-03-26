@@ -1,6 +1,7 @@
 const BOARD_LENGTH = 10;
 const BOARD_HEIGHT = 10;
 const SIZE = 25;
+const OFFSET = 300;
 
 const playerShipCount = 5;
 let allShipsPlaced = false;
@@ -57,10 +58,18 @@ function setUpBoard(board){
       if(fill === 1){
         $(newSquare).css('background-color', 'green');
       }
+
+      var leftPosition = j * SIZE;
+
+      if (board.name === 'cpu') {
+        leftPosition = leftPosition + OFFSET ;
+      }
+
       newSquare.css({
         top: i * SIZE + 'px',
-        left: j * SIZE + 'px',
+        left: leftPosition + 'px',
       });
+
       $('#' + board.name + 'Board').append(newSquare);
     }
   }
