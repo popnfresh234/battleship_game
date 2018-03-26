@@ -58,13 +58,10 @@ function setUpBoard(board){
       if(fill === 1){
         $(newSquare).css('background-color', 'green');
       }
-
       var leftPosition = j * SIZE;
-
       if (board.name === 'cpu') {
         leftPosition = leftPosition + OFFSET ;
       }
-
       newSquare.css({
         top: i * SIZE + 'px',
         left: leftPosition + 'px',
@@ -80,28 +77,23 @@ function isValidPlacement(ship, x, y, isVertical){
 
   //check X & Y for other ships:
   for(var i = 0; i < ship.units; i ++){
-    if(playerBoard.board[y][y + x] === 1){
+    if(!isVertical && playerBoard.board[y][y + x] === 1){
+      console.log("collision hor");
       return false;
     }
-
-    if(playerBoard.board[y + i][x]){
+    if(isVertical && playerBoard.board[y + i][x]){
+      console.log("collisoin vert");
       return false;
     }
   }
-
-  //If the ship will end up being longer than the board, false
+  //make sure ship fits on board horizontally
   if (!isVertical && x + ship.units > BOARD_LENGTH) {
     console.log("TOO LONG! ", ship.units);
     return false;
   }
-
+  //make sure ship fits vertically
   if (isVertical && y + ship.units > BOARD_HEIGHT) {
     console.log("TOO LONG! ", ship.units);
-    return false;
-  }
-
-  //if already ship here
-  if(playerBoard.board[y][x] === 1){
     return false;
   }
   return true;
