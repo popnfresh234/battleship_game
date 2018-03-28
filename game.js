@@ -4,9 +4,14 @@ const SIZE = 25;
 const OFFSET = 300;
 
 const playerShipCount = 5;
+
 let playerFirst = false;
 let allShipsPlaced = false;
 let allCpuShipsPlaced = false;
+let gameFinished = false;
+
+let playerScore = 0;
+let cpuScore = 0;
 
 const ships = [
 {name: 'Carrier', units: 5, placed: false},
@@ -57,8 +62,12 @@ function setUpBoard(board){
         fill = board.board[i][j];
       //}
       let newSquare = $('<div id="' + 's' + j + i +'"class="square">' + fill +'</div>');
-      if(fill === 1){
+      if (fill === 1) {
         $(newSquare).css('background-color', 'green');
+      }
+
+      if (fill === 3){
+        $(newSquare).css('background-color', 'red');
       }
       var leftPosition = j * SIZE;
       if (board.name === 'cpu') {
@@ -77,8 +86,6 @@ function setUpBoard(board){
 
 function isValidPlacement(ship, x, y, isVertical, board){
 
-    console.log('X: ', x);
-    console.log('Y: ', y);
 
 
   //make sure ship fits on board horizontally
@@ -93,7 +100,7 @@ function isValidPlacement(ship, x, y, isVertical, board){
   }
   //check X & Y for other ships:
   for(var i = 0; i < ship.units; i ++){
-    if(!isVertical && board.board[y][y + x] === 1){
+    if(!isVertical && board.board[y][x + i] === 1){
       console.log("collision hor");
       return false;
     }
@@ -113,7 +120,7 @@ function updateBoard(ship, x, y, isVertical, board){
       board.board[y + j][x] = 1;
     }
   }
-  console.log("Placed: " + ship.name);
+
   ship.placed = true;
 
   if (ship.name === "Destroyer"){
@@ -169,9 +176,52 @@ function placeCpuShip(board){
   }
 }
 
+function isHit(board, x, y){
+  if (board.board[y][x] === 1) {
+    console.log('PLAYER SCORE: ', playerScore);
+    console.log('CPU SCORE: ', cpuScore);
+    return true;
+  } else return false;
+}
 
-function fire(){
-  console.log("FIRE!");
+function cpuFire(){
+  let x = Math.floor(Math.random() * 9);
+  let y = Math.floor(Math.random() * 9);
+  let square = $('#playerBoard ' + '#s' + x + y);
+  if (isHit(playerBoard, x, y)) {
+    cpuScore ++;
+    $(square).css("background-color", "red");
+    if (cpuScore === 17) {
+      gameFinished = true;
+      alert('YOU LOSE');
+    }
+  } else {
+    square.css('background-color', 'black');
+  }
+  playerBoard.board[y][x] = 3;
+  setUpBoard(playerBoard);
+}
+
+function fire(event){
+  let square = $(event.target.closest('div'));
+  let id = $(square).attr('id');
+  let x = Number(id.split("")[1]);
+  let y = Number(id.split("")[2]);
+  if (isHit(cpuBoard, x, y)) {
+    $(square).css("background-color", "red");
+    playerScore ++;
+    if (playerScore === 17) {
+      gameFinished = true;
+      alert("DONE");
+    } else if (!gameFinished) {
+      cpuFire();
+    }
+  } else {
+    square.css('background-color', 'black');
+    cpuFire();
+  }
+  cpuBoard.board[y][x] = 3;
+  setUpBoard(cpuBoard);
 }
 
 function placeRandomCpuShips(){
@@ -183,7 +233,6 @@ function placeRandomCpuShips(){
   while(!allCpuShipsPlaced){
     placeCpuShip(cpuBoard);
   }
-
 }
 
 function handlePlayerBoardClick(event){
@@ -196,7 +245,7 @@ function handleCpuBoardClick(event){
   if (!allShipsPlaced) {
     alert("NOT DONE PLACING");
   } else {
-    fire();
+    fire(event);
   }
 }
 
