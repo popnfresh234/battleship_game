@@ -4,7 +4,9 @@ const SIZE = 25;
 const OFFSET = 300;
 
 const playerShipCount = 5;
+let playerFirst = false;
 let allShipsPlaced = false;
+let allCpuShipsPlaced = false;
 
 const ships = [
 {name: 'Carrier', units: 5, placed: false},
@@ -40,7 +42,7 @@ const cpuBoard = {
   [0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0],
-  [1,1,1,1,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0],
   ],
   name: 'cpu'
@@ -51,9 +53,9 @@ function setUpBoard(board){
   for (let i = 0; i < BOARD_HEIGHT; i ++){
     for (let j = 0; j < BOARD_LENGTH; j ++){
       let fill = 0;
-      if (board.name === 'player') {
+      //if (board.name === 'player') {
         fill = board.board[i][j];
-      }
+      //}
       let newSquare = $('<div id="' + 's' + j + i +'"class="square">' + fill +'</div>');
       if(fill === 1){
         $(newSquare).css('background-color', 'green');
@@ -75,17 +77,10 @@ function setUpBoard(board){
 
 function isValidPlacement(ship, x, y, isVertical, board){
 
-  //check X & Y for other ships:
-  for(var i = 0; i < ship.units; i ++){
-    if(!isVertical && board.board[y][y + x]){
-      console.log("collision hor");
-      return false;
-    }
-    if(isVertical && board.board[y + i][x]){
-      console.log("collisoin vert");
-      return false;
-    }
-  }
+    console.log('X: ', x);
+    console.log('Y: ', y);
+
+
   //make sure ship fits on board horizontally
   if (!isVertical && x + ship.units > BOARD_LENGTH) {
     console.log("TOO LONG! ", ship.units);
@@ -95,6 +90,17 @@ function isValidPlacement(ship, x, y, isVertical, board){
   if (isVertical && y + ship.units > BOARD_HEIGHT) {
     console.log("TOO LONG! ", ship.units);
     return false;
+  }
+  //check X & Y for other ships:
+  for(var i = 0; i < ship.units; i ++){
+    if(!isVertical && board.board[y][y + x] === 1){
+      console.log("collision hor");
+      return false;
+    }
+    if(isVertical && board.board[y + i][x] === 1){
+      console.log("collisoin vert");
+      return false;
+    }
   }
   return true;
 }
@@ -107,15 +113,24 @@ function updateBoard(ship, x, y, isVertical, board){
       board.board[y + j][x] = 1;
     }
   }
+  console.log("Placed: " + ship.name);
   ship.placed = true;
-  if(ship.name === "Destroyer"){
-    allShipsPlaced = true;
+
+  if (ship.name === "Destroyer"){
+    if (board.name === playerBoard.name){
+      allShipsPlaced = true;
+    } else {
+      allCpuShipsPlaced = true;
+    }
     $('#orientationContainer').empty().remove();
+    if (board.name === playerBoard.name) {
+      placeRandomCpuShips();
+    }
   }
   setUpBoard(board);
 }
 
-function placeShip(event, board){
+function placePlayerShip(event, board){
   let isVertical = $('#orientationCheckbox').is(":checked");
   let shipToBePlaced;
   for (let i = 0; i < ships.length; i ++){
@@ -135,14 +150,45 @@ function placeShip(event, board){
   }
 }
 
+function placeCpuShip(board){
+  let shipToBePlaced;
+  for (let i = 0; i < ships.length; i ++){
+    if(!ships[i].placed){
+      shipToBePlaced = ships[i];
+      break;
+    }
+  }
+  if (shipToBePlaced) {
+    let x = Math.floor(Math.random() * 9);
+    let y = Math.floor(Math.random() * 9);
+    let isVertical = Math.random() >= 0.5;
+    if(isValidPlacement(shipToBePlaced, x, y, isVertical, board)){
+      $(board).empty();
+      updateBoard(shipToBePlaced, x, y, isVertical, board);
+    }
+  }
+}
+
+
 function fire(){
   console.log("FIRE!");
 }
 
+function placeRandomCpuShips(){
+  //Reset ship array after player has selected
+  ships.forEach(function(ship){
+    ship.placed = false;
+  });
+
+  while(!allCpuShipsPlaced){
+    placeCpuShip(cpuBoard);
+  }
+
+}
 
 function handlePlayerBoardClick(event){
   if (!allShipsPlaced) {
-    placeShip(event, playerBoard);
+    placePlayerShip(event, playerBoard);
   }
 }
 
