@@ -99,12 +99,12 @@ function isValidPlacement(ship, x, y, isVertical, board){
   return true;
 }
 
-function updatePlayerBoard(ship, x, y, isVertical){
+function updateBoard(ship, x, y, isVertical, board){
   for( var j = 0; j < ship.units; j ++){
     if(!isVertical){
-      playerBoard.board[y][x+j] = 1;
+      board.board[y][x+j] = 1;
     } else {
-      playerBoard.board[y + j][x] = 1;
+      board.board[y + j][x] = 1;
     }
   }
   ship.placed = true;
@@ -112,7 +112,7 @@ function updatePlayerBoard(ship, x, y, isVertical){
     allShipsPlaced = true;
     $('#orientationContainer').empty().remove();
   }
-  setUpBoard(playerBoard);
+  setUpBoard(board);
 }
 
 function placeShip(event, board){
@@ -130,7 +130,7 @@ function placeShip(event, board){
     let y = Number(id.split("")[2]);
     if(isValidPlacement(shipToBePlaced, x, y, isVertical, board)){
       $(board).empty();
-      updatePlayerBoard(shipToBePlaced, x, y, isVertical);
+      updateBoard(shipToBePlaced, x, y, isVertical, board);
     }
   }
 }
