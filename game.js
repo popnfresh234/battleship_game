@@ -3,6 +3,12 @@ const BOARD_HEIGHT = 10;
 const SIZE = 25;
 const OFFSET = 300;
 
+const HIT = 3;
+const MISS = 2;
+const SHIP_SPACE = 1;
+const EMPTY = 0;
+const ALREADY_HIT = 99;
+
 const playerShipCount = 5;
 
 let playerFirst = false;
@@ -64,6 +70,10 @@ function setUpBoard(board){
       let newSquare = $('<div id="' + 's' + j + i +'"class="square">' + fill +'</div>');
       if (fill === 1) {
         $(newSquare).css('background-color', 'green');
+      }
+
+      if (fill === 2) {
+        $(newSquare).css('background-color', 'black');
       }
 
       if (fill === 3){
@@ -177,28 +187,41 @@ function placeCpuShip(board){
 }
 
 function isHit(board, x, y){
-  if (board.board[y][x] === 1) {
+  boardValue = board.board[y][x];
+  if (boardValue === SHIP_SPACE) {
     console.log('PLAYER SCORE: ', playerScore);
     console.log('CPU SCORE: ', cpuScore);
-    return true;
-  } else return false;
+    return HIT;
+  } else if (boardValue === EMPTY) {
+    return MISS;
+  } else {
+    return ALREADY_HIT;
+  }
 }
 
 function cpuFire(){
   let x = Math.floor(Math.random() * 9);
   let y = Math.floor(Math.random() * 9);
   let square = $('#playerBoard ' + '#s' + x + y);
-  if (isHit(playerBoard, x, y)) {
+  let updatedSquare = isHit(playerBoard, x, y);
+  if (updatedSquare === ALREADY_HIT){
+    cpuFire();
+    return;
+  }
+
+  if (updatedSquare === HIT) {
     cpuScore ++;
-    $(square).css("background-color", "red");
+    playerBoard.board[y][x] = HIT;
     if (cpuScore === 17) {
       gameFinished = true;
       alert('YOU LOSE');
     }
+  } else if (updatedSquare === ALREADY_HIT){
+    console.log("VOOO");
   } else {
-    square.css('background-color', 'black');
+    playerBoard.board[y][x] = updatedSquare;
   }
-  playerBoard.board[y][x] = 3;
+
   setUpBoard(playerBoard);
 }
 
@@ -207,20 +230,24 @@ function fire(event){
   let id = $(square).attr('id');
   let x = Number(id.split("")[1]);
   let y = Number(id.split("")[2]);
-  if (isHit(cpuBoard, x, y)) {
-    $(square).css("background-color", "red");
+  let updatedSquare = isHit(cpuBoard, x, y);
+  if (updatedSquare === HIT) {
     playerScore ++;
+    cpuBoard.board[y][x] = HIT;
     if (playerScore === 17) {
       gameFinished = true;
-      alert("DONE");
-    } else if (!gameFinished) {
-      cpuFire();
+      alert('YOU WIN');
     }
+  } else if (updatedSquare === ALREADY_HIT){
+    console.log("BOO");
   } else {
-    square.css('background-color', 'black');
+    cpuBoard.board[y][x] = updatedSquare;
+  }
+
+  if (!gameFinished){
     cpuFire();
   }
-  cpuBoard.board[y][x] = 3;
+
   setUpBoard(cpuBoard);
 }
 
