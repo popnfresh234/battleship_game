@@ -73,15 +73,15 @@ function setUpBoard(board){
 }
 
 
-function isValidPlacement(ship, x, y, isVertical){
+function isValidPlacement(ship, x, y, isVertical, board){
 
   //check X & Y for other ships:
   for(var i = 0; i < ship.units; i ++){
-    if(!isVertical && playerBoard.board[y][y + x] === 1){
+    if(!isVertical && board.board[y][y + x]){
       console.log("collision hor");
       return false;
     }
-    if(isVertical && playerBoard.board[y + i][x]){
+    if(isVertical && board.board[y + i][x]){
       console.log("collisoin vert");
       return false;
     }
@@ -115,7 +115,7 @@ function updatePlayerBoard(ship, x, y, isVertical){
   setUpBoard(playerBoard);
 }
 
-function placeShip(event){
+function placeShip(event, board){
   let isVertical = $('#orientationCheckbox').is(":checked");
   let shipToBePlaced;
   for (let i = 0; i < ships.length; i ++){
@@ -128,8 +128,8 @@ function placeShip(event){
     let id = $(event.target.closest('div')).attr('id');
     let x = Number(id.split("")[1]);
     let y = Number(id.split("")[2]);
-    if(isValidPlacement(shipToBePlaced, x, y, isVertical)){
-      $('#playerBoard').empty();
+    if(isValidPlacement(shipToBePlaced, x, y, isVertical, board)){
+      $(board).empty();
       updatePlayerBoard(shipToBePlaced, x, y, isVertical);
     }
   }
@@ -142,7 +142,7 @@ function fire(){
 
 function handlePlayerBoardClick(event){
   if (!allShipsPlaced) {
-    placeShip(event);
+    placeShip(event, playerBoard);
   }
 }
 
